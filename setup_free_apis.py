@@ -1,0 +1,179 @@
+"""
+Interactive setup script for FREE API keys
+Helps students get all FREE API keys easily
+"""
+
+import os
+from pathlib import Path
+
+def print_header(text):
+    """Print formatted header"""
+    print("\n" + "=" * 70)
+    print(f"  {text}")
+    print("=" * 70 + "\n")
+
+def print_step(number, text):
+    """Print step number"""
+    print(f"\n{'='*70}")
+    print(f"  STEP {number}: {text}")
+    print(f"{'='*70}\n")
+
+def main():
+    print_header("🆓 FREE API KEYS SETUP FOR STUDENTS")
+    
+    print("This script will help you set up ALL FREE API keys!")
+    print("Total cost: $0.00 💰")
+    print("\nAll services below are 100% FREE for students!\n")
+    
+    input("Press ENTER to start...")
+    
+    # Collect API keys
+    api_keys = {}
+    
+    # 1. TMDB
+    print_step(1, "TMDB API Key (Movie Matcher) - FREE Forever!")
+    print("📍 Go to: https://www.themoviedb.org/settings/api")
+    print("   1. Sign up for FREE account")
+    print("   2. Request API key (Developer)")
+    print("   3. Copy your API key")
+    print()
+    tmdb_key = input("Paste your TMDB API key (or press ENTER to skip): ").strip()
+    if tmdb_key:
+        api_keys['TMDB_API_KEY'] = tmdb_key
+        print("✅ TMDB key saved!")
+    else:
+        print("⏭️  Skipped TMDB")
+    
+    # 2. Gmail SMTP
+    print_step(2, "Gmail SMTP (Email Service) - FREE Forever!")
+    print("📍 Go to: https://myaccount.google.com/apppasswords")
+    print("   1. Enable 2-Factor Authentication")
+    print("   2. Generate App Password")
+    print("   3. Copy the 16-character password")
+    print()
+    use_gmail = input("Do you want to set up Gmail SMTP? (y/n): ").strip().lower()
+    if use_gmail == 'y':
+        smtp_user = input("Your Gmail address: ").strip()
+        smtp_password = input("App Password (16 characters): ").strip()
+        if smtp_user and smtp_password:
+            api_keys['SMTP_HOST'] = 'smtp.gmail.com'
+            api_keys['SMTP_PORT'] = '587'
+            api_keys['SMTP_USER'] = smtp_user
+            api_keys['SMTP_PASSWORD'] = smtp_password
+            api_keys['SMTP_FROM'] = smtp_user
+            print("✅ Gmail SMTP configured!")
+        else:
+            print("⏭️  Skipped Gmail SMTP")
+    else:
+        print("⏭️  Skipped Gmail SMTP")
+    
+    # 3. Google Books
+    print_step(3, "Google Books API - FREE Forever!")
+    print("📍 Go to: https://console.cloud.google.com/")
+    print("   1. Create FREE project")
+    print("   2. Enable 'Google Books API'")
+    print("   3. Create API Key")
+    print()
+    google_books_key = input("Paste your Google Books API key (or press ENTER to skip): ").strip()
+    if google_books_key:
+        api_keys['GOOGLE_BOOKS_API_KEY'] = google_books_key
+        print("✅ Google Books key saved!")
+    else:
+        print("⏭️  Skipped Google Books")
+    
+    # 4. Hugging Face
+    print_step(4, "Hugging Face (AI Images) - 100% FREE Forever!")
+    print("📍 Go to: https://huggingface.co/settings/tokens")
+    print("   1. Sign up for FREE")
+    print("   2. Create new token (Read access)")
+    print("   3. Copy your token")
+    print()
+    hf_key = input("Paste your Hugging Face token (or press ENTER to skip): ").strip()
+    if hf_key:
+        api_keys['HUGGINGFACE_API_KEY'] = hf_key
+        print("✅ Hugging Face token saved!")
+    else:
+        print("⏭️  Skipped Hugging Face")
+    
+    # 5. LibraryThing
+    print_step(5, "LibraryThing API - FREE Forever!")
+    print("📍 Go to: https://www.librarything.com/services/keys.php")
+    print("   1. Sign up for FREE")
+    print("   2. Request developer key")
+    print("   3. Copy your API key")
+    print()
+    lt_key = input("Paste your LibraryThing API key (or press ENTER to skip): ").strip()
+    if lt_key:
+        api_keys['LIBRARYTHING_API_KEY'] = lt_key
+        print("✅ LibraryThing key saved!")
+    else:
+        print("⏭️  Skipped LibraryThing")
+    
+    # Summary
+    print_header("📊 SUMMARY")
+    print(f"Total API keys configured: {len(api_keys)}")
+    print(f"Total cost: $0.00 💰")
+    print()
+    
+    if api_keys:
+        print("Configured services:")
+        for key in api_keys.keys():
+            if not key.startswith('SMTP_'):
+                print(f"  ✅ {key}")
+        
+        # Create .env file
+        print()
+        create_env = input("Do you want to create/update .env file? (y/n): ").strip().lower()
+        
+        if create_env == 'y':
+            env_path = Path(__file__).parent / '.env'
+            
+            # Read existing .env if it exists
+            existing_content = ""
+            if env_path.exists():
+                with open(env_path, 'r', encoding='utf-8') as f:
+                    existing_content = f.read()
+            
+            # Write new keys
+            with open(env_path, 'a', encoding='utf-8') as f:
+                if not existing_content:
+                    f.write("# FREE API Keys - All services are FREE for students!\n")
+                    f.write("# Generated by setup_free_apis.py\n\n")
+                
+                f.write("\n# ===== FREE API KEYS =====\n")
+                for key, value in api_keys.items():
+                    # Check if key already exists
+                    if key not in existing_content:
+                        f.write(f"{key}={value}\n")
+                    else:
+                        print(f"  ⚠️  {key} already exists in .env (not overwritten)")
+            
+            print(f"\n✅ .env file updated: {env_path}")
+            print("\n🎉 Setup complete!")
+            print("\nNext steps:")
+            print("  1. Restart your server: python start.py")
+            print("  2. Check status: python final_check.py")
+            print("  3. Visit: http://localhost:8000/api/docs")
+        else:
+            print("\n📝 Manual setup:")
+            print("Create a .env file with these keys:")
+            print()
+            for key, value in api_keys.items():
+                print(f"{key}={value}")
+    else:
+        print("⚠️  No API keys configured.")
+        print("\nYou can run this script again anytime to add keys!")
+    
+    print_header("✅ DONE!")
+    print("See FREE_API_KEYS_GUIDE.md for detailed instructions")
+    print("All services are 100% FREE for students! 🎓")
+    print()
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n\n⏸️  Setup cancelled. Run again anytime!")
+    except Exception as e:
+        print(f"\n❌ Error: {e}")
+        print("Please check FREE_API_KEYS_GUIDE.md for manual setup")
